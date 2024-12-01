@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<div id="container"></div>
+
+<script>
+
+function mpld3_load_lib(url, callback){
+  var s = document.createElement('script');
+  s.src = url;
+  s.async = true;
+  s.onreadystatechange = s.onload = callback;
+  s.onerror = function(){console.warn("failed to load library " + url);};
+  document.getElementsByTagName("head")[0].appendChild(s);
+}
+
+const fig_name = "fig1"
+
+mpld3_load_lib("https://d3js.org/d3.v5.js", function(){
+         mpld3_load_lib("https://mpld3.github.io/js/mpld3.v0.5.10.js", function() {
+            draw_plots();
+		 });
+		 });
+
+// import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+const fsURI = "fs.json";
+var fs = "";
+
+function load_and_draw_plot(elem) {
+  const plot_src = elem.getAttribute("src");
+  var fig_name = elem.getAttribute("id");
+  if (fig_name === null) {
+    fig_name = "fig_"+ Math.random().toString(36).substr(2, 20);
+    elem.setAttribute("id", fig_name);
+  }
+  draw_mpld3_plot(fig_name, plot_src);
+}
+
+async function draw_mpld3_plot(fig_name, srcURI) {
+  const response = await fetch(srcURI);
+  const data = await response.json();
+  mpld3.draw_figure(fig_name, data);
+}
+
+function draw_plots() {
+    var plot_elems = document.getElementsByClassName('prizz_plot');
+    for (const plot_elem of plot_elems) {
+      console.log(plot_elem)
+      load_and_draw_plot(plot_elem)
+    }
+}
+
+
+
+</script>
+
+<div id="fig1"></div>
+
+<div class="prizz_plot" src="fs.json"></div>
